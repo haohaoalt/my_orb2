@@ -1,3 +1,115 @@
+# my test
+# hao_orb2
+## 01 创建工作空间
+```
+git clone https://github.com/raulmur/ORB_SLAM2.git ORB_SLAM2
+mkdir -p ~/ORB_SLAM2/src
+cd ~/ORB_SLAM2/src
+catkin_init_workspace
+cd ..
+catkin_make
+echo "source ~/ORB_SLAM2/devel/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+## 02 安装Pangolin
+所以，首先删除pangolin v0.6：
+
+sudo updatedb
+locate pangolin
+#根据输出的目录进行删除
+sudo rm -rf /usr/local/include/pangolin 
+然后再次安装pangolin v0.5，或者去GitHub Web端直接下载或者git clone后checkout到v0.5的版本。即
+git clone https://github.com/stevenlovegrove/Pangolin.git
+cd Pangolin
+git checkout 7987c9b        #即v0.5版本
+mkdir build 
+cd build
+cmake ..
+make -j16 #j后面数字根据CPU核心数决定，机器配置差就写1或2
+sudo make install   #安装
+删除ORB-SLAM2文件夹内build文件的内容，再次进行编译，就顺利通过啦。
+```
+ sudo apt-get install libglew-dev
+ sudo apt-get install libboost-dev libboost-thread-dev libboost-filesystem-dev
+ sudo apt-get install libpython2.7-dev
+ git clone https://github.com/stevenlovegrove/Pangolin.git 
+ mkdir build 
+ cd build 
+ cmake -DCPP11_NO_BOOSR=1 .. 
+ make -j4
+ sudo make install
+ ```
+ 
+ ## 03 安装opencv
+ ```
+git clone https://github.com/haohaoalt/opencv3.4.5.git
+cd opencv3.4.5
+mkdir build
+cd build
+sudo cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local ..
+sudo make -j8
+sudo make install
+```
+配置环境
+`sudo gedit /etc/ld.so.conf`
+打开文件，并在文末加上一行
+
+`include /usr/loacal/lib`
+
+
+运行：
+
+`sudo ldconfig`
+
+修改bash.bashrc文件
+
+`sudo gedit /etc/bash.bashrc`
+
+在文末添加：
+
+`PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig`
+`export PKG_CONFIG_PATH`
+
+运行
+`source /etc/bash.bashrc`
+
+检查：
+`pkg-config opencv --modversion`
+
+测试是否正常安装 (成功会出现带“hello opcv” 字样的窗口)
+```
+ cd opencv-3.4.5/samples/cpp/example_cmake 
+ cmake . 
+ make 
+ ./opencv_example
+ ```
+
+## 04 安装Eigen3
+```
+git clone https://github.com/haohaoalt/eigen3.3.7.git
+cd eigen3.3.7
+mkdir build
+cd build
+cmake ..
+sudo make install
+```
+安装后 头文件安装在`/usr/local/include/eigen3/`
+移动头文件
+
+`sudo cp -r /usr/local/include/eigen3/Eigen /usr/local/include`
+
+ 备注：在很多程序中include 时经常使用#include <Eigen/Dense> 而不是使用#include<eigen3/Eigen/Dense> 所以要做下处理。
+ 
+## 05 安装ORB-SLAM2
+```
+git clone https://github.com/haohaoalt/hao_orb2.git
+cd hao_orb2
+chmod +x build_ros.sh
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:~/orbslam_ws/src/ORB_SLAM2/Examples/ROS 
+./build_ros.sh
+```
+
+
 # ORB-SLAM2
 **Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2))
 
