@@ -1,45 +1,24 @@
 # my test
 # hao_orb2
 
-## 01 创建工作空间
+## 01 code download
 ```
-git clone https://github.com/raulmur/ORB_SLAM2.git ORB_SLAM2
-mkdir -p ~/ORB_SLAM2/src
-cd ~/ORB_SLAM2/src
-catkin_init_workspace
-cd ..
-catkin_make
-echo "source ~/ORB_SLAM2/devel/setup.bash" >> ~/.bashrc
-source ~/.bashrc
+git clone https://github.com/haohaoalt/my_orb2.git
 ```
 ## 02 安装Pangolin
-所以，首先删除pangolin v0.6：
-
-sudo updatedb
-locate pangolin
-#根据输出的目录进行删除
-sudo rm -rf /usr/local/include/pangolin 
-然后再次安装pangolin v0.5，或者去GitHub Web端直接下载或者git clone后checkout到v0.5的版本。即
+```shell
+sudo apt-get install libglew-dev
+sudo apt-get install libboost-dev libboost-thread-dev libboost-filesystem-dev
+sudo apt-get install libpython2.7-dev
 git clone https://github.com/stevenlovegrove/Pangolin.git
 cd Pangolin
-git checkout 7987c9b        #即v0.5版本
+git checkout -b 7987c9b        #即v0.5版本
 mkdir build 
 cd build
-cmake ..
-make -j16 #j后面数字根据CPU核心数决定，机器配置差就写1或2
-sudo make install   #安装
-删除ORB-SLAM2文件夹内build文件的内容，再次进行编译，就顺利通过啦。
+cmake -DCPP11_NO_BOOSR=1 .. 
+make -j4 #j后面数字根据CPU核心数决定，机器配置差就写1或2
+sudo make install
 ```
- sudo apt-get install libglew-dev
- sudo apt-get install libboost-dev libboost-thread-dev libboost-filesystem-dev
- sudo apt-get install libpython2.7-dev
- git clone https://github.com/stevenlovegrove/Pangolin.git 
- mkdir build 
- cd build 
- cmake -DCPP11_NO_BOOSR=1 .. 
- make -j4
- sudo make install
- ```
  
  ## 03 安装opencv
  ```
@@ -69,6 +48,7 @@ sudo make install
 在文末添加：
 
 `PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig`
+
 `export PKG_CONFIG_PATH`
 
 运行
@@ -103,10 +83,14 @@ sudo make install
  
 ## 05 安装ORB-SLAM2
 ```
-git clone https://github.com/haohaoalt/hao_orb2.git
-cd hao_orb2
+https://github.com/haohaoalt/my_orb2.git
+cd my_orb2
+chmod +x build.sh
+./build.sh
 chmod +x build_ros.sh
-export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:~/orbslam_ws/src/ORB_SLAM2/Examples/ROS 
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:~/my_orb2/src/ORB_SLAM2/Examples/ROS 
+sudo rosdep init
+rosdep update
 ./build_ros.sh
 ```
 
