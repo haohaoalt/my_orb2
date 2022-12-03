@@ -13,10 +13,6 @@ We have tested the library in **Ubuntu 12.04**, **14.04** and **16.04**, but it 
 
 We use the new thread and chrono functionalities of C++11.
 
-#### 
-
-
-
 ## 02 安装Pangolin
 
 **Pangolin**
@@ -408,7 +404,11 @@ rosrun ORB_SLAM2 RGBD  Vocabulary/ORBvoc.txt Examples/RGB-D/orb_ros_rgbd.yaml
 
 有点卡，可能是bag包的帧率问题
 
-## 10 其他相关
+## 10 源码阅读
+
+见讲义 来自：https://www.yuque.com/chenhai-7zi1m/se4n14/udvggt
+
+## 11 其他相关
 
 **Authors:** [Raul Mur-Artal](http://webdiis.unizar.es/~raulmur/), [Juan D. Tardos](http://webdiis.unizar.es/~jdtardos/), [J. M. M. Montiel](http://webdiis.unizar.es/~josemari/) and [Dorian Galvez-Lopez](http://doriangalvez.com/) ([DBoW2](https://github.com/dorian3d/DBoW2))
 
@@ -467,10 +467,10 @@ if you use ORB-SLAM2 (Stereo or RGB-D) in an academic work, please cite:
 
 
 
-## 11 Processing your own sequences
+## 12 Processing your own sequences
 You will need to create a settings file with the calibration of your camera. See the settings file provided for the TUM and KITTI datasets for monocular, stereo and RGB-D cameras. We use the calibration model of OpenCV. See the examples to learn how to create a program that makes use of the ORB-SLAM2 library and how to pass images to the SLAM system. Stereo input must be synchronized and rectified. RGB-D input must be synchronized and depth registered.
 
-## 12 SLAM and Localization Modes
+## 13 SLAM and Localization Modes
 You can change between the *SLAM* and *Localization mode* using the GUI of the map viewer.
 
 **SLAM Mode**

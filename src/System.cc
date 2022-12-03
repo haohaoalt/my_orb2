@@ -28,7 +28,7 @@
 #include <unistd.h>
 namespace ORB_SLAM2
 {
-
+//TODO system构造函数
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
                const bool bUseViewer):mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),mbActivateLocalizationMode(false),
         mbDeactivateLocalizationMode(false)
@@ -49,7 +49,9 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     else if(mSensor==RGBD)
         cout << "RGB-D" << endl;
 
-    //Check settings file
+    // Check settings file
+    // NOTE step1. 初始化各成员变量
+    // step1.1. 读取配置文件信息
     cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
     if(!fsSettings.isOpened())
     {
@@ -60,7 +62,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
     //Load ORB Vocabulary
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
-
+    // step1.2. 创建ORB词袋
     mpVocabulary = new ORBVocabulary();
     bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
     if(!bVocLoad)
@@ -71,26 +73,32 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     }
     cout << "Vocabulary loaded!" << endl << endl;
 
-    //Create KeyFrame Database
+    // Create KeyFrame Database
+    // step1.3. 创建关键帧数据库,主要保存ORB描述子倒排索引(即根据描述子查找拥有该描述子的关键帧)
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
-    //Create the Map
+    // Create the Map
+    //  step1.4. 创建地图
     mpMap = new Map();
 
     //Create Drawers. These are used by the Viewer
     mpFrameDrawer = new FrameDrawer(mpMap);
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
-    //Initialize the Tracking thread
+    // Initialize the Tracking thread
     //(it will live in the main thread of execution, the one that called this constructor)
+    // NOTE step2. 创建3大线程: Tracking、LocalMapping和LoopClosing
+    // step2.1. 主线程就是Tracking线程,只需创建Tracking对象即可
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
                              mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor);
 
-    //Initialize the Local Mapping thread and launch
+    // Initialize the Local Mapping thread and launch
+    //  step2.2. 创建LocalMapping线程及mpLocalMapper
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
     mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run,mpLocalMapper);
 
-    //Initialize the Loop Closing thread and launch
+    // Initialize the Loop Closing thread and launch
+    //  step2.3. 创建LoopClosing线程及mpLoopCloser
     mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR);
     mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
 
@@ -102,7 +110,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mpTracker->SetViewer(mpViewer);
     }
 
-    //Set pointers between threads
+    // Set pointers between threads
+    // NOTE step3. 设置线程间通信
     mpTracker->SetLocalMapper(mpLocalMapper);
     mpTracker->SetLoopClosing(mpLoopCloser);
 

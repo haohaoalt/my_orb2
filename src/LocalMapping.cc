@@ -43,12 +43,12 @@ void LocalMapping::SetTracker(Tracking *pTracker)
 {
     mpTracker=pTracker;
 }
-
+//NOTE LocalMapping线程主函数 
 void LocalMapping::Run()
 {
 
     mbFinished = false;
-
+//TODO 此线程类似一个死循环，一直判断是否接收到关键帧
     while(1)
     {
         // Tracking will see that Local Mapping is busy
@@ -83,6 +83,7 @@ void LocalMapping::Run()
                 // Check redundant local Keyframes
                 KeyFrameCulling();
             }
+            //TODO：将关键帧传给LoopClosing线程
 
             mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
         }

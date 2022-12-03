@@ -35,6 +35,7 @@ void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageF
 
 int main(int argc, char **argv)
 {
+    // 判断输入参数个数
     if(argc != 5)
     {
         cerr << endl << "Usage: ./rgbd_tum path_to_vocabulary path_to_settings path_to_sequence path_to_association" << endl;
@@ -42,6 +43,7 @@ int main(int argc, char **argv)
     }
 
     // Retrieve paths to images
+    //NOTE:读取图片及左右目关联信息 应该是深度与rgb关联信息吧？
     vector<string> vstrImageFilenamesRGB;
     vector<string> vstrImageFilenamesD;
     vector<double> vTimestamps;
@@ -49,6 +51,7 @@ int main(int argc, char **argv)
     LoadImages(strAssociationFilename, vstrImageFilenamesRGB, vstrImageFilenamesD, vTimestamps);
 
     // Check consistency in the number of images and depthmaps
+    //NOTE：检查图片文件及输入文件的一致性
     int nImages = vstrImageFilenamesRGB.size();
     if(vstrImageFilenamesRGB.empty())
     {
@@ -62,6 +65,7 @@ int main(int argc, char **argv)
     }
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
+    //NOTE：创建SLAM对象，他是一个ORB_SLAM2::System类型的变量
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,true);
 
     // Vector for tracking time statistics
@@ -74,9 +78,10 @@ int main(int argc, char **argv)
 
     // Main loop
     cv::Mat imRGB, imD;
+    // NOTE：循环读取图片 遍历图片,进行SLAM
     for(int ni=0; ni<nImages; ni++)
     {
-        // Read image and depthmap from file
+        // Read image and depthmap from file 读取图片
         imRGB = cv::imread(string(argv[3])+"/"+vstrImageFilenamesRGB[ni],CV_LOAD_IMAGE_UNCHANGED);
         imD = cv::imread(string(argv[3])+"/"+vstrImageFilenamesD[ni],CV_LOAD_IMAGE_UNCHANGED);
         double tframe = vTimestamps[ni];

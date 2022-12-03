@@ -53,16 +53,18 @@ void LoopClosing::SetLocalMapper(LocalMapping *pLocalMapper)
     mpLocalMapper=pLocalMapper;
 }
 
-
+// NOTE LoopClosing线程主函数
 void LoopClosing::Run()
 {
     mbFinished =false;
-
+    //死循环
     while(1)
     {
         // Check if there are keyframes in the queue
+        //NOTE 判断是否接收到关键帧
         if(CheckNewKeyFrames())
         {
+            //处理关键帧
             // Detect loop candidates and check covisibility consistency
             if(DetectLoop())
             {
@@ -74,9 +76,11 @@ void LoopClosing::Run()
                    CorrectLoop();
                }
             }
-        }       
-
+        }
+        // 查看是否有外部线程请求复位当前线程
         ResetIfRequested();
+        // 线程暂停5毫秒,5毫秒结束后再从while(1)循环首部运行
+        //std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
         if(CheckFinish())
             break;
@@ -630,7 +634,7 @@ void LoopClosing::RequestReset()
         usleep(5000);
     }
 }
-
+// 查看是否有外部线程请求复位当前线程
 void LoopClosing::ResetIfRequested()
 {
     unique_lock<mutex> lock(mMutexReset);

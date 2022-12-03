@@ -392,7 +392,10 @@ void KeyFrame::EraseChild(KeyFrame *pKF)
 
 void KeyFrame::ChangeParent(KeyFrame *pKF)
 {
-    unique_lock<mutex> lockCon(mMutexConnections);
+    // NOTE 为防止多个线程同时操作同一变量造成混乱,引入锁机制
+    // 将成员函数本身设为私有变量( private 或 protected ),并在操作它们的公有函数内加锁.
+    // 一把锁在某个时刻只有一个线程能够拿到,如果程序执行到某个需要锁的位置,但是锁被别的线程拿着不释放的话,当前线程就会暂停下来;直到其它线程释放了这个锁, 当前线程才能拿走锁并继续向下执行.
+    unique_lock<mutex> lockCon(mMutexConnections); // 加锁
     mpParent = pKF;
     pKF->AddChild(this);
 }
@@ -405,7 +408,11 @@ set<KeyFrame*> KeyFrame::GetChilds()
 
 KeyFrame* KeyFrame::GetParent()
 {
-    unique_lock<mutex> lockCon(mMutexConnections);
+    /*
+    什么时候加锁和释放锁?
+unique_lock<mutex> lockCon(mMutexConnections); 这句话就是加锁,锁的有效性仅限于大括号 {} 之内,也就是说,程序运行出大括号之后就释放锁了.因此可以看到有一些代码中加上了看似莫名其妙的大括号.
+    */
+    unique_lock<mutex> lockCon(mMutexConnections); //加锁
     return mpParent;
 }
 
@@ -552,15 +559,16 @@ bool KeyFrame::isBad()
 
 void KeyFrame::EraseConnection(KeyFrame* pKF)
 {
+    //第一部分加锁
     bool bUpdate = false;
     {
-        unique_lock<mutex> lock(mMutexConnections);
+        unique_lock<mutex> lock(mMutexConnections); //加锁
         if(mConnectedKeyFrameWeights.count(pKF))
         {
             mConnectedKeyFrameWeights.erase(pKF);
             bUpdate=true;
         }
-    }
+    } // 程序运行到这就释放锁,后面的操作不需要抢到锁就能执行
 
     if(bUpdate)
         UpdateBestCovisibles();

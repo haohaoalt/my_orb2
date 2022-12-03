@@ -263,7 +263,7 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
 
     return mCurrentFrame.mTcw.clone();
 }
-
+//TODO:Tracking 线程主函数
 void Tracking::Track()
 {
     if(mState==NO_IMAGES_YET)
@@ -454,6 +454,7 @@ void Tracking::Track()
             mlpTemporalPoints.clear();
 
             // Check if we need to insert a new keyframe
+            //NOTE 跟踪线程成功，根据条件判断是否产生关键帧
             if(NeedNewKeyFrame())
                 CreateNewKeyFrame();
 
@@ -1064,6 +1065,7 @@ void Tracking::CreateNewKeyFrame()
 {
     if(!mpLocalMapper->SetNotStop(true))
         return;
+    //NOTE：产生关键帧并将关键帧传给Localmapping线程
 
     KeyFrame* pKF = new KeyFrame(mCurrentFrame,mpMap,mpKeyFrameDB);
 
