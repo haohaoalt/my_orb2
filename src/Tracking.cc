@@ -49,7 +49,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpMap(pMap), mnLastRelocFrameId(0)
 {
     // Load camera parameters from settings file
-
+    // 从配置文件中读取相机参数并构造内参矩阵
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
     float fx = fSettings["Camera.fx"];
     float fy = fSettings["Camera.fy"];
@@ -505,7 +505,7 @@ void Tracking::Track()
     }
 
 }
-
+// NOTE Tracking 线程中初始化过程 Tracking::StereoInitialization() 
 
 void Tracking::StereoInitialization()
 {
@@ -560,7 +560,7 @@ void Tracking::StereoInitialization()
         mState=OK;
     }
 }
-
+// NOTE Tracking 线程中初始化过程( Tracking::MonocularInitialization() 和 Tracking::StereoInitialization() )
 void Tracking::MonocularInitialization()
 {
 

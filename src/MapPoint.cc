@@ -327,6 +327,7 @@ bool MapPoint::IsInKeyFrame(KeyFrame *pKF)
     return (mObservations.count(pKF));
 }
 
+//NOTE: 函数 MapPoint::UpdateNormalAndDepth() 的调用时机
 void MapPoint::UpdateNormalAndDepth()
 {
     map<KeyFrame*,size_t> observations;

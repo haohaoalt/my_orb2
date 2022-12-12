@@ -134,7 +134,9 @@ protected:
      int mnFound;
 
      // Bad flag (we do not currently erase MapPoint from memory)
+     //NOTE 先标记后删除  异步删除
      bool mbBad;
+     // protected 用来替换当前地图点的新地图点
      MapPoint* mpReplaced;
 
      // Scale invariance distances

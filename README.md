@@ -313,11 +313,52 @@ roslaunch usb_cam usb_cam_orb2_mono.launch
 //此launch文件发布的图像话题为适配ORBSLAM2实时单目模式改为/camera/image_raw，很多教程改源码而不是改相机话题这件事不是很理解
 ```
 
+相机参数：http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/CameraInfo.html
+
+cameraInfo包含D、K、R、P四个矩阵。
+
+For "plumb_bob", the 5 parameters are: (k1, k2, t1, t2, k3).
+
+矩阵D是失真系数，包括(k1, k2, t1, t2, k3)
+
+\# Intrinsic camera matrix for the raw (distorted) images.
+\#        [fx 0 cx]
+\# K = [ 0 fy cy]
+\#         [ 0 0 1]
+
+矩阵K是相机内参，即 
+$$
+\begin{bmatrix}
+f_x  & 0 &cx \\
+ 0 & f_y &cy \\
+0  & 0 &1
+\end{bmatrix}
+$$
+矩阵R是一个3*3的[旋转矩阵](https://so.csdn.net/so/search?q=旋转矩阵&spm=1001.2101.3001.7020)，仅对双目相机有效，使左右极线平行。
+矩阵P是[投影矩阵](https://so.csdn.net/so/search?q=投影矩阵&spm=1001.2101.3001.7020)，在单目相机中，
+$$
+\begin{bmatrix}
+fx'  &  0&cx'  &Tx \\
+  0&fy'  &cy'  &Ty \\
+ 0 & 0 & 1 & 0
+\end{bmatrix}
+$$
+
 ```
  rosrun ORB_SLAM2 Mono Vocabulary/ORBvoc.txt Examples/Monocular/orb_ros_mono.yaml   //这个地方参数文件用的TUM1 其实是不正确的 应该用自己相机的参数
 ```
 
 <img src="README.assets/image-20221202211547739.png" alt="image-20221202211547739" style="zoom:25%;" />
+
+如果使用自己录的数据集步骤：
+
+```
+roscore
+rosbag play --pause 3f_mono.bag
+rosrun ORB_SLAM2 Mono Vocabulary/ORBvoc.txt Examples/Monocular/orb_ros_mono.yaml 
+```
+
+
 
 ### 9.3 运行单目增强现实演示
 
@@ -383,6 +424,16 @@ rosbag play --pause V1_01_easy.bag /cam0/image_raw:=/camera/left/image_raw /cam1
 
 
 <img src="README.assets/image-20221202215701197.png" alt="image-20221202215701197" style="zoom: 33%;" />
+
+自己的数据集
+
+```
+roscore
+rosbag play --pause 3f_stereo.bag /mynteye/left/image_mono:=/camera/left/image_raw /mynteye/right/image_mono:=/camera/right/image_raw
+rosrun ORB_SLAM2 Stereo Vocabulary/ORBvoc.txt Examples/Stereo/orb_ros_stereo.yaml false
+```
+
+
 
 ### 9.5 运行RGBD节点
 

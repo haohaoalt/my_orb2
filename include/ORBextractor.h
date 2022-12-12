@@ -28,28 +28,32 @@
 
 namespace ORB_SLAM2
 {
-
+//NOTE  八叉树筛选实现 定义了一个 ExtractorNode 类用于进行八叉树分配
 class ExtractorNode
 {
-public:
-    ExtractorNode():bNoMore(false){}
+    public:
+        ExtractorNode() : bNoMore(false) {}
 
-    void DivideNode(ExtractorNode &n1, ExtractorNode &n2, ExtractorNode &n3, ExtractorNode &n4);
+        void DivideNode(ExtractorNode &n1, ExtractorNode &n2, ExtractorNode &n3, ExtractorNode &n4);
 
-    std::vector<cv::KeyPoint> vKeys;
-    cv::Point2i UL, UR, BL, BR;
-    std::list<ExtractorNode>::iterator lit;
-    bool bNoMore;
+        std::vector<cv::KeyPoint> vKeys;
+        cv::Point2i UL, UR, BL, BR;
+        std::list<ExtractorNode>::iterator lit;
+        bool bNoMore;
 };
-
+// FAST 特征点和 ORB 描述子本身不具有尺度信息, ORBextractor 通过构建图像金字塔来得到特征点尺度信息.将输入图片逐级缩放得到图像金字塔, 金字塔层级越高, 图片分辨率越低, ORB特征点越大.
 class ORBextractor
 {
 public:
     
     enum {HARRIS_SCORE=0, FAST_SCORE=1 };
+    //构造函数
+    //NOTE 构造函数的流程：初始化图像金字塔相关变量->初始化用于计算描述子的pattern->计算近似圆形的边界坐标umax
+    //NOTE 参数从配置文件*.yaml文件中读入
 
     ORBextractor(int nfeatures, float scaleFactor, int nlevels,
                  int iniThFAST, int minThFAST);
+    //析构函数
 
     ~ORBextractor(){}
 
@@ -82,12 +86,18 @@ public:
         return mvInvLevelSigma2;
     }
 
+//访问控制public 图像金字塔每层的图像
     std::vector<cv::Mat> mvImagePyramid;
 
 protected:
-
+    //NOTE 构建图像金字塔ComputePyramid()
     void ComputePyramid(cv::Mat image);
-    void ComputeKeyPointsOctTree(std::vector<std::vector<cv::KeyPoint> >& allKeypoints);    
+    // NOTE 提取特征点并进行筛选
+//简单描述特征点响应值/描述子的区别
+//响应值描述的是该特征点的区分度大小:响应值越大的点越应该被留用做特征点，响应值类似于分数，分数越高的学生越好，越应该被保留
+//描述子是特征点的哈希运算：大小无意义，仅用来在数据库中快速找到某特征点，描述子相当于学号，系统随机运算出一串数字，用于查找
+    void ComputeKeyPointsOctTree(std::vector<std::vector<cv::KeyPoint> >& allKeypoints);
+    // NOTE 八叉树筛选特征点 == 非极大值抑制 每个省取100个上清华北大
     std::vector<cv::KeyPoint> DistributeOctTree(const std::vector<cv::KeyPoint>& vToDistributeKeys, const int &minX,
                                            const int &maxX, const int &minY, const int &maxY, const int &nFeatures, const int &level);
 
@@ -99,14 +109,17 @@ protected:
     int nlevels;
     int iniThFAST;
     int minThFAST;
-
+    //金字塔每层级中提取的特征点数
     std::vector<int> mnFeaturesPerLevel;
 
     std::vector<int> umax;
-
+    //各层级的缩放系数
     std::vector<float> mvScaleFactor;
+    //各层级缩放系数的倒数
     std::vector<float> mvInvScaleFactor;    
+    //各层级缩放系数的平方
     std::vector<float> mvLevelSigma2;
+    //各层级缩放系数的平方倒数
     std::vector<float> mvInvLevelSigma2;
 };
 

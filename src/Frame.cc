@@ -243,7 +243,7 @@ void Frame::AssignFeaturesToGrid()
             mGrid[nGridPosX][nGridPosY].push_back(i);
     }
 }
-
+// 函数中`mpORBextractorLeft`和`mpORBextractorRight`都是`ORBextractor`对象
 void Frame::ExtractORB(int flag, const cv::Mat &im)
 {
     if(flag==0)
